@@ -1,0 +1,38 @@
+version: "3.4"
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    volumes:
+      - .docker/mysql/:/var/lib/mysql
+       - db
+    networks:
+      - docker_network
+      - public_net
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: milsinguane
+      MYSQL_USER: root
+      MYSQL_PASSWORD: secret
+      MYSQL_ROOT_PASSWORD: secret
+
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin
+      ports:
+        - 8080:80
+      links:
+        - mysql
+      environment:
+          PMA_HOST: mysql
+      networks:
+        - docker_network
+        - public_net
+
+volumes:
+  db:
+networks:
+  docker_network:
+    internal: true
+  public_net:
+    driver: bridge
