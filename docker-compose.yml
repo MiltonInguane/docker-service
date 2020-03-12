@@ -12,10 +12,10 @@ services:
     ports:
       - 3306:3306
     environment:
-      MYSQL_DATABASE: milsinguane
-      MYSQL_USER: root
-      MYSQL_PASSWORD: secret
-      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
 
   phpmyadmin:
       image: phpmyadmin/phpmyadmin
