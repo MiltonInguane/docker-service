@@ -1,38 +1,47 @@
-version: "3.4"
+version: '3.8'
 services:
-  mysql:
-    image: mysql:5.7
-    restart: always
-    volumes:
-      - .docker/mysql/:/var/lib/mysql
-       - db
-    networks:
-      - docker_network
-      - public_net
-    ports:
-      - 3306:3306
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
     environment:
-      MYSQL_DATABASE: ${DB_DATABASE}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD="${MSSQL_DB_PASSWORD}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - ./data:/var/opt/mssql/data
 
-  phpmyadmin:
-      image: phpmyadmin/phpmyadmin
-      ports:
-        - ${PHPMYADMIN_PORT}:80
-      links:
-        - mysql
-      environment:
-          PMA_HOST: mysql
-      networks:
-        - docker_network
-        - public_net
+  oracle:
+    image: store/oracle/database-enterprise:12.2.0.1
+    container_name: oracle
+    ports:
+      - "1521:1521"
+    environment:
+      - ORACLE_SID=ORCLCDB
+      - ORACLE_PDB=ORCLPDB1
+      - ORACLE_PWD=${ORACLE_DB_ROOT_PASSWORD}
+      - ORACLE_CHARACTERSET=AL32UTF8
+    volumes:
+      - ./data:/opt/oracle/oradata
+    networks:
+      - oracle_network
 
-volumes:
-  db:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DB_DATABASE}
+      - MYSQL_USER=${MYSQL_DB_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_DB_ROOT_PASSWORD}
+    volumes:
+      - ./data:/var/lib/mysql
+    networks:
+      - mysql_network
+
 networks:
-  docker_network:
-    internal: true
-  public_net:
-    driver: bridge
+  oracle_network:
+  mysql_network:
